@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Viewings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .viewing-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .viewing-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .viewing-info {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .viewing-info p {
+            margin: 5px 0;
+        }
+        
+        .viewing-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .viewing-actions a {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏠 Property Viewings</h1>
+        
+        <a href="/new" class="btn">+ New Viewing</a>
+        
+        {% if viewings %}
+            {% for viewing in viewings %}
+            <div class="viewing-card">
+                <h3>{{ viewing.address }}</h3>
+                <div class="viewing-info">
+                    {% if viewing.viewing_time %}
+                    <p><strong>Time:</strong> {{ viewing.viewing_time }}</p>
+                    {% endif %}
+                    {% if viewing.contact_name %}
+                    <p><strong>Contact:</strong> {{ viewing.contact_name }}</p>
+                    {% endif %}
+                    <p><strong>Created:</strong> {{ viewing.created_at }}</p>
+                </div>
+                <div class="viewing-actions">
+                    <a href="/view/{{ viewing.id }}" class="btn">View Details</a>
+                    <a href="/edit/{{ viewing.id }}" class="btn" style="background: #28a745;">Edit</a>
+                    <button onclick="deleteViewing({{ viewing.id }})" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>No viewings yet!</p>
+                <p>Click "New Viewing" above to create your first property checklist.</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        function deleteViewing(id) {
+            if (confirm('Are you sure you want to delete this viewing?')) {
+                fetch('/delete/' + id, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
