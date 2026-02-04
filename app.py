@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, send_from_directory
 from datetime import datetime
 import sqlite3
 import json
@@ -6,6 +6,24 @@ import os
 
 app = Flask(__name__)
 app.config['DATABASE'] = '/data/viewings.db'
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
+
+@app.template_filter('from_json')
+def from_json_filter(s):
+    return json.loads(s) if s else {}
+
+@app.template_filter('format_datetime')
+def format_datetime_filter(s):
+    if not s:
+        return ''
+    try:
+        dt = datetime.fromisoformat(s.replace('Z', '+00:00'))
+        return dt.strftime('%d %b %Y, %H:%M')
+    except:
+        return s
 
 def get_db():
     db = sqlite3.connect(app.config['DATABASE'])
