@@ -12,14 +12,14 @@ Open `http://localhost:5000`
 
 ## Features
 
-✅ Checkboxes with notes for all properties
-✅ Drag-and-drop reordering
-✅ Custom properties
-✅ Currency selector (£/$/ €)
-✅ Side-by-side comparison view
-✅ Horizontal scrolling
-✅ **PWA - Install as mobile app**
-✅ **Works offline**
+Checkboxes with notes for all properties
+Drag-and-drop reordering
+Custom properties
+Currency selector (£/$/ €)
+Side-by-side comparison view
+Horizontal scrolling
+**PWA - Install as mobile app**
+**Works offline**
 
 ## Install on Mobile
 
