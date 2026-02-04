@@ -66,12 +66,15 @@
         </div>
         {% endif %}
         
-        {% if checklist_data.notes %}
+        
         <div class="mb-8">
             <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Notes</h2>
+            {% if checklist_data.notes %}
             <div class="p-3 bg-gray-50 rounded">{{ checklist_data.notes }}</div>
+            {% else %} No notes currently
+            {% endif %}
         </div>
-        {% endif %}
+        
         
         <div class="pt-6 border-t flex gap-3">
             <a href="/edit/{{ viewing.id }}" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Edit</a>

@@ -76,7 +76,11 @@
             
             <div class="mb-6">
                 <h2 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 pb-2 border-b-2 border-blue-600">Notes</h2>
-                <textarea id="notes" class="w-full p-2 border rounded text-sm" rows="4">{{ checklist_data.notes }}</textarea>
+                <textarea id="notes" class="w-full p-2 border rounded text-sm" rows="4">
+                    {% if checklist_data %}{{ checklist_data.notes }}
+                    {% else %} No notes currently
+                    {% endif %}
+                </textarea>
             </div>
             
             <div class="pt-4 border-t flex gap-2">
