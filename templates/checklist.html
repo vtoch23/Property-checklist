@@ -6,92 +6,82 @@
     <title>Property Viewing Checklist</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 p-5">
-    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
-        <a href="/" class="text-blue-600 hover:underline mb-5 inline-block">← Back</a>
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">{% if viewing %}Edit{% else %}New{% endif %} Viewing</h1>
+<body class="bg-gray-50 p-3 sm:p-5">
+    <div class="max-w-4xl mx-auto bg-white p-4 sm:p-8 rounded-lg shadow">
+        <a href="/" class="text-blue-600 hover:underline mb-4 inline-block">← Back</a>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">{% if viewing %}Edit{% else %}New{% endif %} Viewing</h1>
         
         <form id="checklistForm">
             {% if viewing %}<input type="hidden" id="viewing_id" value="{{ viewing.id }}">{% endif %}
             
-            <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Basic Information</h2>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium text-gray-700">Address *</label>
-                    <input type="text" id="address" required class="w-full p-3 border border-gray-300 rounded" value="{% if viewing %}{{ viewing.address }}{% endif %}">
+            <div class="mb-6">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 pb-2 border-b-2 border-blue-600">Basic Information</h2>
+                <div class="mb-3">
+                    <label class="block mb-1 text-sm font-medium">Address *</label>
+                    <input type="text" id="address" required class="w-full p-2 border rounded text-sm" value="{% if viewing %}{{ viewing.address }}{% endif %}">
                 </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium text-gray-700">Viewing Time</label>
-                    <input type="datetime-local" id="viewing_time" class="w-full p-3 border border-gray-300 rounded" value="{% if viewing %}{{ viewing.viewing_time }}{% endif %}">
+                <div class="mb-3">
+                    <label class="block mb-1 text-sm font-medium">Viewing Time</label>
+                    <input type="datetime-local" id="viewing_time" class="w-full p-2 border rounded text-sm" value="{% if viewing %}{{ viewing.viewing_time }}{% endif %}">
                 </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium text-gray-700">Contact Name</label>
-                    <input type="text" id="contact_name" class="w-full p-3 border border-gray-300 rounded" value="{% if viewing %}{{ viewing.contact_name }}{% endif %}">
-                </div>
-            </div>
-            
-            <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Property Details</h2>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium text-gray-700">Price</label>
-                    <div class="flex gap-3 items-center">
-                        <div class="flex gap-1">
-                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if not checklist_data or not checklist_data.price_currency or checklist_data.price_currency == 'GBP' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="GBP">£</button>
-                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.price_currency == 'USD' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="USD">$</button>
-                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.price_currency == 'EUR' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="EUR">€</button>
-                        </div>
-                        <input type="text" id="price" class="flex-1 p-3 border border-gray-300 rounded" value="{% if checklist_data %}{{ checklist_data.price }}{% endif %}">
-                        <input type="hidden" id="price_currency" value="{% if checklist_data and checklist_data.price_currency %}{{ checklist_data.price_currency }}{% else %}GBP{% endif %}">
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium text-gray-700">Deposit</label>
-                    <div class="flex gap-3 items-center">
-                        <div class="flex gap-1">
-                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if not checklist_data or not checklist_data.deposit_currency or checklist_data.deposit_currency == 'GBP' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="GBP">£</button>
-                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.deposit_currency == 'USD' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="USD">$</button>
-                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.deposit_currency == 'EUR' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="EUR">€</button>
-                        </div>
-                        <input type="text" id="deposit" class="flex-1 p-3 border border-gray-300 rounded" value="{% if checklist_data %}{{ checklist_data.deposit }}{% endif %}">
-                        <input type="hidden" id="deposit_currency" value="{% if checklist_data and checklist_data.deposit_currency %}{{ checklist_data.deposit_currency }}{% else %}GBP{% endif %}">
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium text-gray-700">Total Housemates</label>
-                    <input type="text" id="total_housemates" class="w-full p-3 border border-gray-300 rounded" value="{% if checklist_data %}{{ checklist_data.total_housemates }}{% endif %}">
+                <div class="mb-3">
+                    <label class="block mb-1 text-sm font-medium">Contact Name</label>
+                    <input type="text" id="contact_name" class="w-full p-2 border rounded text-sm" value="{% if viewing %}{{ viewing.contact_name }}{% endif %}">
                 </div>
             </div>
             
-            <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Checklist</h2>
+            <div class="mb-6">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 pb-2 border-b-2 border-blue-600">Property Details</h2>
+                <div class="mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-sm font-medium">Price</label>
+                        <div class="flex gap-1">
+                            <button type="button" class="currency-btn w-8 h-8 border-2 rounded text-sm {% if not checklist_data or not checklist_data.price_currency or checklist_data.price_currency == 'GBP' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="GBP" data-field="price">£</button>
+                            <button type="button" class="currency-btn w-8 h-8 border-2 rounded text-sm {% if checklist_data and checklist_data.price_currency == 'USD' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="USD" data-field="price">$</button>
+                            <button type="button" class="currency-btn w-8 h-8 border-2 rounded text-sm {% if checklist_data and checklist_data.price_currency == 'EUR' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="EUR" data-field="price">€</button>
+                        </div>
+                    </div>
+                    <input type="text" id="price" class="w-full p-2 border rounded text-sm" value="{% if checklist_data %}{{ checklist_data.price }}{% endif %}">
+                    <input type="hidden" id="price_currency" value="{% if checklist_data and checklist_data.price_currency %}{{ checklist_data.price_currency }}{% else %}GBP{% endif %}">
+                </div>
+                <div class="mb-3">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-sm font-medium">Deposit</label>
+                        <div class="flex gap-1">
+                            <button type="button" class="currency-btn w-8 h-8 border-2 rounded text-sm {% if not checklist_data or not checklist_data.deposit_currency or checklist_data.deposit_currency == 'GBP' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="GBP" data-field="deposit">£</button>
+                            <button type="button" class="currency-btn w-8 h-8 border-2 rounded text-sm {% if checklist_data and checklist_data.deposit_currency == 'USD' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="USD" data-field="deposit">$</button>
+                            <button type="button" class="currency-btn w-8 h-8 border-2 rounded text-sm {% if checklist_data and checklist_data.deposit_currency == 'EUR' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="EUR" data-field="deposit">€</button>
+                        </div>
+                    </div>
+                    <input type="text" id="deposit" class="w-full p-2 border rounded text-sm" value="{% if checklist_data %}{{ checklist_data.deposit }}{% endif %}">
+                    <input type="hidden" id="deposit_currency" value="{% if checklist_data and checklist_data.deposit_currency %}{{ checklist_data.deposit_currency }}{% else %}GBP{% endif %}">
+                </div>
+                <div class="mb-3">
+                    <label class="block mb-1 text-sm font-medium">Total Housemates</label>
+                    <input type="text" id="total_housemates" class="w-full p-2 border rounded text-sm" value="{% if checklist_data %}{{ checklist_data.total_housemates }}{% endif %}">
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 pb-2 border-b-2 border-blue-600">Checklist</h2>
                 <div id="propertiesList"></div>
-                <button type="button" class="mt-3 px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700" onclick="addProperty()">+ Add Property</button>
+                <button type="button" class="mt-3 px-4 py-2 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700" onclick="addProperty()">+ Add Property</button>
             </div>
             
-            <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Distances</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block mb-1 text-sm font-medium">Station</label><input type="text" id="distance_station" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_station }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Camden</label><input type="text" id="distance_camden" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_camden }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Stansted</label><input type="text" id="distance_stansted" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_stansted }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Luton</label><input type="text" id="distance_luton" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_luton }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Gatwick</label><input type="text" id="distance_gatwick" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_gatwick }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Moorgate</label><input type="text" id="to_moorgate" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_moorgate }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Oxford Circus</label><input type="text" id="to_oxford_circus" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_oxford_circus }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Redhill</label><input type="text" id="to_redhill" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_redhill }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">London Bridge</label><input type="text" id="to_london_bridge" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_london_bridge }}{% endif %}"></div>
-                    <div><label class="block mb-1 text-sm font-medium">Bexleyheath</label><input type="text" id="to_bexleyheath" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_bexleyheath }}{% endif %}"></div>
-                </div>
+            <div class="mb-6">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 pb-2 border-b-2 border-blue-600">Distances</h2>
+                <div id="distancesList"></div>
+                <button type="button" class="mt-3 px-4 py-2 bg-cyan-600 text-white rounded text-sm hover:bg-cyan-700" onclick="addDistance()">+ Add Distance</button>
             </div>
             
-            <div class="mb-8">
-                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Notes</h2>
-                <textarea id="notes" class="w-full p-3 border border-gray-300 rounded" rows="4">{% if checklist_data %}{{ checklist_data.notes }}{% endif %}</textarea>
+            <div class="mb-6">
+                <h2 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 pb-2 border-b-2 border-blue-600">Notes</h2>
+                <textarea id="notes" class="w-full p-2 border rounded text-sm" rows="4">{% if checklist_data %}{{ checklist_data.notes }}{% endif %}</textarea>
             </div>
             
-            <div class="pt-6 border-t flex gap-3">
-                <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Save</button>
-                <a href="/" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Cancel</a>
+            <div class="pt-4 border-t flex gap-2">
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700">Save</button>
+                <a href="/" class="px-4 py-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700">Cancel</a>
             </div>
         </form>
     </div>
@@ -106,7 +96,13 @@
             'Bedside Tables (41x29)', 'Shoe Cabinet (78x26)', 'Shoe Rack', 'Piano', 'TV'
         ];
         
+        const defaultDistances = [
+            'Station', 'Camden', 'Stansted', 'Luton', 'Gatwick', 'Moorgate', 
+            'Oxford Circus', 'Redhill', 'London Bridge', 'Bexleyheath'
+        ];
+        
         let properties = [];
+        let distances = [];
         
         function initProperties() {
             {% if checklist_data and checklist_data.properties %}
@@ -117,35 +113,50 @@
             renderProperties();
         }
         
+        function initDistances() {
+            {% if checklist_data and checklist_data.distances %}
+                distances = {{ checklist_data.distances|tojson }};
+            {% else %}
+                distances = defaultDistances.map(label => ({ label, value: '' }));
+            {% endif %}
+            renderDistances();
+        }
+        
         function renderProperties() {
             const list = document.getElementById('propertiesList');
             list.innerHTML = properties.map((p, i) => `
-                <div class="flex gap-2 items-center mb-3 p-3 bg-gray-50 rounded cursor-move property-item" draggable="true" data-index="${i}">
-                    <span class="text-xl text-gray-500 cursor-grab active:cursor-grabbing">⋮⋮</span>
-                    <input type="checkbox" ${p.checked ? 'checked' : ''} onchange="properties[${i}].checked = this.checked" class="w-5 h-5 cursor-pointer">
-                    <span class="min-w-[200px] font-medium">${p.label}</span>
-                    <input type="text" placeholder="Notes..." value="${p.note || ''}" oninput="properties[${i}].note = this.value" class="flex-1 p-2 text-sm border border-gray-300 rounded">
-                    <button type="button" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700" onclick="removeProperty(${i})">×</button>
+                <div class="mb-2 p-2 bg-gray-50 rounded property-item" draggable="true" data-index="${i}">
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center gap-2 flex-1 min-w-0">
+                            <span class="text-gray-500 cursor-grab active:cursor-grabbing text-sm">⋮⋮</span>
+                            <span class="text-xs font-medium truncate">${p.label}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" ${p.checked ? 'checked' : ''} onchange="properties[${i}].checked = this.checked" class="w-5 h-5">
+                            <button type="button" class="px-2 py-1 bg-red-600 text-white rounded text-xs" onclick="removeProperty(${i})">×</button>
+                        </div>
+                    </div>
+                    <textarea placeholder="Notes..." oninput="properties[${i}].note = this.value" class="w-full p-1 text-xs border rounded resize-none" rows="2">${p.note || ''}</textarea>
                 </div>
             `).join('');
             
             document.querySelectorAll('.property-item').forEach(item => {
-                item.addEventListener('dragstart', e => {
-                    draggedIndex = parseInt(e.target.dataset.index);
-                    e.target.classList.add('opacity-50');
-                });
+                item.addEventListener('dragstart', handleDragStart);
                 item.addEventListener('dragover', e => e.preventDefault());
-                item.addEventListener('drop', e => {
-                    e.preventDefault();
-                    const dropIndex = parseInt(e.target.closest('.property-item').dataset.index);
-                    if (draggedIndex !== dropIndex) {
-                        const item = properties.splice(draggedIndex, 1)[0];
-                        properties.splice(dropIndex, 0, item);
-                        renderProperties();
-                    }
-                });
+                item.addEventListener('drop', handleDrop);
                 item.addEventListener('dragend', e => e.target.classList.remove('opacity-50'));
             });
+        }
+        
+        function renderDistances() {
+            const list = document.getElementById('distancesList');
+            list.innerHTML = distances.map((d, i) => `
+                <div class="flex gap-2 items-center mb-2">
+                    <input type="text" placeholder="Location" value="${d.label}" oninput="distances[${i}].label = this.value" class="flex-1 p-2 border rounded text-sm">
+                    <input type="text" placeholder="Distance" value="${d.value}" oninput="distances[${i}].value = this.value" class="flex-1 p-2 border rounded text-sm">
+                    <button type="button" class="px-2 py-1 bg-red-600 text-white rounded text-sm" onclick="removeDistance(${i})">×</button>
+                </div>
+            `).join('');
         }
         
         function addProperty() {
@@ -157,25 +168,51 @@
         }
         
         function removeProperty(i) {
-            if (confirm('Remove this property?')) {
+            if (confirm('Remove?')) {
                 properties.splice(i, 1);
                 renderProperties();
             }
         }
         
+        function addDistance() {
+            distances.push({ label: '', value: '' });
+            renderDistances();
+        }
+        
+        function removeDistance(i) {
+            distances.splice(i, 1);
+            renderDistances();
+        }
+        
         let draggedIndex = null;
+        
+        function handleDragStart(e) {
+            draggedIndex = parseInt(e.target.dataset.index);
+            e.target.classList.add('opacity-50');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropIndex = parseInt(e.target.closest('.property-item').dataset.index);
+            if (draggedIndex !== dropIndex) {
+                const item = properties.splice(draggedIndex, 1)[0];
+                properties.splice(dropIndex, 0, item);
+                renderProperties();
+            }
+        }
         
         document.querySelectorAll('.currency-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const group = this.closest('.flex');
-                const field = group.parentElement.querySelector('input[type="hidden"]');
-                group.querySelectorAll('.currency-btn').forEach(b => {
+                const field = this.dataset.field;
+                const fieldInput = document.getElementById(field + '_currency');
+                const siblings = document.querySelectorAll(`[data-field="${field}"]`);
+                siblings.forEach(b => {
                     b.classList.remove('border-blue-600', 'bg-blue-50');
                     b.classList.add('border-gray-300');
                 });
                 this.classList.add('border-blue-600', 'bg-blue-50');
                 this.classList.remove('border-gray-300');
-                field.value = this.dataset.currency;
+                fieldInput.value = this.dataset.currency;
             });
         });
         
@@ -196,16 +233,7 @@
                         deposit_currency: document.getElementById('deposit_currency').value,
                         total_housemates: document.getElementById('total_housemates').value,
                         properties: properties,
-                        distance_station: document.getElementById('distance_station').value,
-                        distance_camden: document.getElementById('distance_camden').value,
-                        distance_stansted: document.getElementById('distance_stansted').value,
-                        distance_luton: document.getElementById('distance_luton').value,
-                        distance_gatwick: document.getElementById('distance_gatwick').value,
-                        to_moorgate: document.getElementById('to_moorgate').value,
-                        to_oxford_circus: document.getElementById('to_oxford_circus').value,
-                        to_redhill: document.getElementById('to_redhill').value,
-                        to_london_bridge: document.getElementById('to_london_bridge').value,
-                        to_bexleyheath: document.getElementById('to_bexleyheath').value,
+                        distances: distances,
                         notes: document.getElementById('notes').value
                     }
                 })
@@ -215,6 +243,7 @@
         });
         
         initProperties();
+        initDistances();
     </script>
 </body>
 </html>
