@@ -1,150 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="icon" type="image/svg+xml" href="/static/icon.svg">
     <title>Property Viewings</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .btn:hover {
-            background: #0056b3;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .viewing-card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .viewing-card h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .viewing-info {
-            color: #666;
-            margin-bottom: 15px;
-        }
-        
-        .viewing-info p {
-            margin: 5px 0;
-        }
-        
-        .viewing-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .viewing-actions a {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-        
-        .empty-state p {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>🏠 Property Viewings</h1>
-        
-        <a href="/new" class="btn">+ New Viewing</a>
+<body class="bg-gray-50 p-5">
+    <div class="max-w-full">
+        <h1 class="text-3xl font-bold text-gray-800 mb-5">🏠 Property Viewings</h1>
+        <a href="/new" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg mb-5 hover:bg-blue-700">+ New Viewing</a>
         
         {% if viewings %}
-            {% for viewing in viewings %}
-            <div class="viewing-card">
-                <h3>{{ viewing.address }}</h3>
-                <div class="viewing-info">
-                    {% if viewing.viewing_time %}
-                    <p><strong>Time:</strong> {{ viewing.viewing_time }}</p>
-                    {% endif %}
-                    {% if viewing.contact_name %}
-                    <p><strong>Contact:</strong> {{ viewing.contact_name }}</p>
-                    {% endif %}
-                    <p><strong>Created:</strong> {{ viewing.created_at }}</p>
+        <div class="overflow-x-auto pb-4">
+            <div class="flex gap-5 min-w-max">
+                {% for viewing in viewings|reverse %}
+                {% set data = viewing.checklist_data|from_json %}
+                <div class="w-96 bg-white rounded-lg shadow-md flex flex-col flex-shrink-0">
+                    <div class="p-4 bg-blue-600 text-white rounded-t-lg">
+                        <h3 class="font-semibold mb-1">{{ viewing.address }}</h3>
+                        <div class="text-xs opacity-90">
+                            {% if viewing.viewing_time %}{{ viewing.viewing_time|format_datetime }}{% endif %}
+                            {% if viewing.contact_name %} • {{ viewing.contact_name }}{% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-gray-50 flex gap-2">
+                        <a href="/view/{{ viewing.id }}" class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">View</a>
+                        <a href="/edit/{{ viewing.id }}" class="px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700">Edit</a>
+                        <button onclick="deleteViewing({{ viewing.id }})" class="px-3 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+                    </div>
+                    
+                    <div class="p-4 overflow-y-auto" style="max-height: 70vh;">
+                        {% if data.price %}
+                        <div class="mb-3 pb-3 border-b">
+                            <div class="text-xs font-semibold text-gray-600">Price</div>
+                            <div class="text-sm text-gray-800">
+                                {% if data.price_currency == 'USD' %}${% elif data.price_currency == 'EUR' %}€{% else %}£{% endif %}{{ data.price }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if data.deposit %}
+                        <div class="mb-3 pb-3 border-b">
+                            <div class="text-xs font-semibold text-gray-600">Deposit</div>
+                            <div class="text-sm text-gray-800">
+                                {% if data.deposit_currency == 'USD' %}${% elif data.deposit_currency == 'EUR' %}€{% else %}£{% endif %}{{ data.deposit }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if data.total_housemates %}
+                        <div class="mb-3 pb-3 border-b">
+                            <div class="text-xs font-semibold text-gray-600">Housemates</div>
+                            <div class="text-sm text-gray-800">{{ data.total_housemates }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if data.properties %}
+                        <div class="mb-3">
+                            <div class="text-xs font-semibold text-gray-600 mb-2">Checklist</div>
+                            {% for prop in data.properties %}
+                            <div class="flex items-start gap-2 mb-2 p-2 rounded {% if prop.checked %}bg-green-50{% else %}bg-gray-50{% endif %}">
+                                <span class="{% if prop.checked %}text-green-600{% else %}text-gray-400{% endif %} font-bold">{% if prop.checked %}✓{% else %}✗{% endif %}</span>
+                                <div class="flex-1">
+                                    <div class="text-xs">{{ prop.label }}</div>
+                                    {% if prop.note %}
+                                    <div class="text-xs text-gray-600 italic mt-1">{{ prop.note }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="viewing-actions">
-                    <a href="/view/{{ viewing.id }}" class="btn">View Details</a>
-                    <a href="/edit/{{ viewing.id }}" class="btn" style="background: #28a745;">Edit</a>
-                    <button onclick="deleteViewing({{ viewing.id }})" class="btn btn-danger">Delete</button>
-                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
+        </div>
         {% else %}
-            <div class="empty-state">
-                <p>No viewings yet!</p>
-                <p>Click "New Viewing" above to create your first property checklist.</p>
-            </div>
+        <div class="text-center py-16 text-gray-600">
+            <p class="text-lg mb-2">No viewings yet!</p>
+            <p>Click "New Viewing" to start.</p>
+        </div>
         {% endif %}
     </div>
     
     <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js');
+        }
+        
         function deleteViewing(id) {
-            if (confirm('Are you sure you want to delete this viewing?')) {
-                fetch('/delete/' + id, {
-                    method: 'POST'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    }
-                });
+            if (confirm('Delete this viewing?')) {
+                fetch('/delete/' + id, { method: 'POST' })
+                .then(r => r.json())
+                .then(d => { if (d.success) location.reload(); });
             }
         }
     </script>

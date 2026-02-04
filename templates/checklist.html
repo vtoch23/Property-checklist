@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Viewing Checklist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-5">
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
+        <a href="/" class="text-blue-600 hover:underline mb-5 inline-block">← Back</a>
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">{% if viewing %}Edit{% else %}New{% endif %} Viewing</h1>
+        
+        <form id="checklistForm">
+            {% if viewing %}<input type="hidden" id="viewing_id" value="{{ viewing.id }}">{% endif %}
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Basic Information</h2>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium text-gray-700">Address *</label>
+                    <input type="text" id="address" required class="w-full p-3 border border-gray-300 rounded" value="{% if viewing %}{{ viewing.address }}{% endif %}">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium text-gray-700">Viewing Time</label>
+                    <input type="datetime-local" id="viewing_time" class="w-full p-3 border border-gray-300 rounded" value="{% if viewing %}{{ viewing.viewing_time }}{% endif %}">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium text-gray-700">Contact Name</label>
+                    <input type="text" id="contact_name" class="w-full p-3 border border-gray-300 rounded" value="{% if viewing %}{{ viewing.contact_name }}{% endif %}">
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Property Details</h2>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium text-gray-700">Price</label>
+                    <div class="flex gap-3 items-center">
+                        <div class="flex gap-1">
+                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if not checklist_data or not checklist_data.price_currency or checklist_data.price_currency == 'GBP' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="GBP">£</button>
+                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.price_currency == 'USD' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="USD">$</button>
+                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.price_currency == 'EUR' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="EUR">€</button>
+                        </div>
+                        <input type="text" id="price" class="flex-1 p-3 border border-gray-300 rounded" value="{% if checklist_data %}{{ checklist_data.price }}{% endif %}">
+                        <input type="hidden" id="price_currency" value="{% if checklist_data and checklist_data.price_currency %}{{ checklist_data.price_currency }}{% else %}GBP{% endif %}">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium text-gray-700">Deposit</label>
+                    <div class="flex gap-3 items-center">
+                        <div class="flex gap-1">
+                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if not checklist_data or not checklist_data.deposit_currency or checklist_data.deposit_currency == 'GBP' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="GBP">£</button>
+                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.deposit_currency == 'USD' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="USD">$</button>
+                            <button type="button" class="currency-btn px-4 py-2 border-2 rounded cursor-pointer text-lg {% if checklist_data and checklist_data.deposit_currency == 'EUR' %}border-blue-600 bg-blue-50{% else %}border-gray-300{% endif %}" data-currency="EUR">€</button>
+                        </div>
+                        <input type="text" id="deposit" class="flex-1 p-3 border border-gray-300 rounded" value="{% if checklist_data %}{{ checklist_data.deposit }}{% endif %}">
+                        <input type="hidden" id="deposit_currency" value="{% if checklist_data and checklist_data.deposit_currency %}{{ checklist_data.deposit_currency }}{% else %}GBP{% endif %}">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-2 font-medium text-gray-700">Total Housemates</label>
+                    <input type="text" id="total_housemates" class="w-full p-3 border border-gray-300 rounded" value="{% if checklist_data %}{{ checklist_data.total_housemates }}{% endif %}">
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Checklist</h2>
+                <div id="propertiesList"></div>
+                <button type="button" class="mt-3 px-4 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700" onclick="addProperty()">+ Add Property</button>
+            </div>
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Distances</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block mb-1 text-sm font-medium">Station</label><input type="text" id="distance_station" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_station }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Camden</label><input type="text" id="distance_camden" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_camden }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Stansted</label><input type="text" id="distance_stansted" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_stansted }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Luton</label><input type="text" id="distance_luton" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_luton }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Gatwick</label><input type="text" id="distance_gatwick" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.distance_gatwick }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Moorgate</label><input type="text" id="to_moorgate" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_moorgate }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Oxford Circus</label><input type="text" id="to_oxford_circus" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_oxford_circus }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Redhill</label><input type="text" id="to_redhill" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_redhill }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">London Bridge</label><input type="text" id="to_london_bridge" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_london_bridge }}{% endif %}"></div>
+                    <div><label class="block mb-1 text-sm font-medium">Bexleyheath</label><input type="text" id="to_bexleyheath" class="w-full p-2 border border-gray-300 rounded text-sm" value="{% if checklist_data %}{{ checklist_data.to_bexleyheath }}{% endif %}"></div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Notes</h2>
+                <textarea id="notes" class="w-full p-3 border border-gray-300 rounded" rows="4">{% if checklist_data %}{{ checklist_data.notes }}{% endif %}</textarea>
+            </div>
+            
+            <div class="pt-6 border-t flex gap-3">
+                <button type="submit" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Save</button>
+                <a href="/" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Cancel</a>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        const defaultProperties = [
+            'Bills Included', 'Length of Stay', 'Own Bathroom', 'Water Pressure', 'Wardrobe Space',
+            'Under Bed Storage', 'Good Light', 'Heating', 'Enough Sockets', 'Plants (incl. hanging)',
+            'Kitchen Space', 'Bicycle Storage', 'Garden', 'Large Plants', 'Ground Floor',
+            'Overnight Guests', 'Tall Bathroom Unit (35x22)', 'Large Chest (150x50)',
+            'Small Blue Cabinet (63x33)', 'Small Beige Cabinet (62x32)', 'Desk (120x50)',
+            'Bedside Tables (41x29)', 'Shoe Cabinet (78x26)', 'Shoe Rack', 'Piano', 'TV'
+        ];
+        
+        let properties = [];
+        
+        function initProperties() {
+            {% if checklist_data and checklist_data.properties %}
+                properties = {{ checklist_data.properties|tojson }};
+            {% else %}
+                properties = defaultProperties.map(label => ({ label, checked: false, note: '' }));
+            {% endif %}
+            renderProperties();
+        }
+        
+        function renderProperties() {
+            const list = document.getElementById('propertiesList');
+            list.innerHTML = properties.map((p, i) => `
+                <div class="flex gap-2 items-center mb-3 p-3 bg-gray-50 rounded cursor-move property-item" draggable="true" data-index="${i}">
+                    <span class="text-xl text-gray-500 cursor-grab active:cursor-grabbing">⋮⋮</span>
+                    <input type="checkbox" ${p.checked ? 'checked' : ''} onchange="properties[${i}].checked = this.checked" class="w-5 h-5 cursor-pointer">
+                    <span class="min-w-[200px] font-medium">${p.label}</span>
+                    <input type="text" placeholder="Notes..." value="${p.note || ''}" oninput="properties[${i}].note = this.value" class="flex-1 p-2 text-sm border border-gray-300 rounded">
+                    <button type="button" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700" onclick="removeProperty(${i})">×</button>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.property-item').forEach(item => {
+                item.addEventListener('dragstart', e => {
+                    draggedIndex = parseInt(e.target.dataset.index);
+                    e.target.classList.add('opacity-50');
+                });
+                item.addEventListener('dragover', e => e.preventDefault());
+                item.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const dropIndex = parseInt(e.target.closest('.property-item').dataset.index);
+                    if (draggedIndex !== dropIndex) {
+                        const item = properties.splice(draggedIndex, 1)[0];
+                        properties.splice(dropIndex, 0, item);
+                        renderProperties();
+                    }
+                });
+                item.addEventListener('dragend', e => e.target.classList.remove('opacity-50'));
+            });
+        }
+        
+        function addProperty() {
+            const label = prompt('Property name:');
+            if (label) {
+                properties.push({ label, checked: false, note: '' });
+                renderProperties();
+            }
+        }
+        
+        function removeProperty(i) {
+            if (confirm('Remove this property?')) {
+                properties.splice(i, 1);
+                renderProperties();
+            }
+        }
+        
+        let draggedIndex = null;
+        
+        document.querySelectorAll('.currency-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const group = this.closest('.flex');
+                const field = group.parentElement.querySelector('input[type="hidden"]');
+                group.querySelectorAll('.currency-btn').forEach(b => {
+                    b.classList.remove('border-blue-600', 'bg-blue-50');
+                    b.classList.add('border-gray-300');
+                });
+                this.classList.add('border-blue-600', 'bg-blue-50');
+                this.classList.remove('border-gray-300');
+                field.value = this.dataset.currency;
+            });
+        });
+        
+        document.getElementById('checklistForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    viewing_id: document.getElementById('viewing_id')?.value || null,
+                    address: document.getElementById('address').value,
+                    viewing_time: document.getElementById('viewing_time').value,
+                    contact_name: document.getElementById('contact_name').value,
+                    checklist: {
+                        price: document.getElementById('price').value,
+                        price_currency: document.getElementById('price_currency').value,
+                        deposit: document.getElementById('deposit').value,
+                        deposit_currency: document.getElementById('deposit_currency').value,
+                        total_housemates: document.getElementById('total_housemates').value,
+                        properties: properties,
+                        distance_station: document.getElementById('distance_station').value,
+                        distance_camden: document.getElementById('distance_camden').value,
+                        distance_stansted: document.getElementById('distance_stansted').value,
+                        distance_luton: document.getElementById('distance_luton').value,
+                        distance_gatwick: document.getElementById('distance_gatwick').value,
+                        to_moorgate: document.getElementById('to_moorgate').value,
+                        to_oxford_circus: document.getElementById('to_oxford_circus').value,
+                        to_redhill: document.getElementById('to_redhill').value,
+                        to_london_bridge: document.getElementById('to_london_bridge').value,
+                        to_bexleyheath: document.getElementById('to_bexleyheath').value,
+                        notes: document.getElementById('notes').value
+                    }
+                })
+            })
+            .then(r => r.json())
+            .then(d => { if (d.success) window.location.href = '/'; });
+        });
+        
+        initProperties();
+    </script>
+</body>
+</html>
