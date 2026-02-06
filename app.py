@@ -59,13 +59,41 @@ def init_db():
             address TEXT NOT NULL,
             viewing_time TEXT,
             contact_name TEXT,
+            photo TEXT,
             checklist_data TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
     ''')
+    # Migration: add user_id if missing
+    try:
+        db.execute('SELECT user_id FROM viewings LIMIT 1')
+    except sqlite3.OperationalError:
+        db.execute('ALTER TABLE viewings ADD COLUMN user_id INTEGER DEFAULT 1')
+    # Migration: add photo if missing
+    try:
+        db.execute('SELECT photo FROM viewings LIMIT 1')
+    except sqlite3.OperationalError:
+        db.execute('ALTER TABLE viewings ADD COLUMN photo TEXT')
     db.commit()
     db.close()
+
+@app.route('/reset-password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        new_password = hashlib.sha256(request.form['new_password'].encode()).hexdigest()
+        
+        db = get_db()
+        user = db.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
+        if user:
+            db.execute('UPDATE users SET password = ? WHERE email = ?', (new_password, email))
+            db.commit()
+            db.close()
+            return redirect(url_for('login'))
+        db.close()
+        return render_template('reset_password.html', error='Email not found')
+    return render_template('reset_password.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -109,7 +137,7 @@ def logout():
 @login_required
 def index():
     db = get_db()
-    viewings = db.execute('SELECT * FROM viewings WHERE user_id = ? ORDER BY viewing_time DESC', (session['user_id'],)).fetchall()
+    viewings = db.execute('SELECT * FROM viewings WHERE user_id = ? ORDER BY created_at DESC', (session['user_id'],)).fetchall()
     db.close()
     return render_template('index.html', viewings=viewings)
 
@@ -150,16 +178,16 @@ def save_viewing():
     if viewing_id:
         db.execute('''
             UPDATE viewings 
-            SET address = ?, viewing_time = ?, contact_name = ?, checklist_data = ?
+            SET address = ?, viewing_time = ?, contact_name = ?, photo = ?, checklist_data = ?
             WHERE id = ? AND user_id = ?
-        ''', (data['address'], data['viewing_time'], data['contact_name'], 
+        ''', (data['address'], data['viewing_time'], data['contact_name'], data.get('photo'),
               json.dumps(data['checklist']), viewing_id, session['user_id']))
     else:
         db.execute('''
-            INSERT INTO viewings (user_id, address, viewing_time, contact_name, checklist_data)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO viewings (user_id, address, viewing_time, contact_name, photo, checklist_data)
+            VALUES (?, ?, ?, ?, ?, ?)
         ''', (session['user_id'], data['address'], data['viewing_time'], data['contact_name'], 
-              json.dumps(data['checklist'])))
+              data.get('photo'), json.dumps(data['checklist'])))
     
     db.commit()
     db.close()
