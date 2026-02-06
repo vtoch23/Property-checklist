@@ -22,5 +22,5 @@ data/
 .DS_Store
 Thumbs.db
 
-#npm
-.npm-global
+#node modules
+.npm*

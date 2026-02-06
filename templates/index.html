@@ -18,82 +18,82 @@
         <a href="/new" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg mb-5 hover:bg-blue-700">+ New Viewing</a>
         
         {% if viewings %}
-        <div class="overflow-x-auto pb-4">
-            <div class="flex gap-5 min-w-max">
-                {% for viewing in viewings|reverse %}
-                {% set data = viewing.checklist_data|from_json %}
-                <div class="w-96 bg-white rounded-lg shadow-md flex flex-col flex-shrink-0">
-                    <div class="p-4 bg-blue-600 text-white rounded-t-lg">
-                        <h3 class="font-semibold mb-1">{{ viewing.address }}</h3>
-                        <div class="text-xs opacity-90">
-                            {% if viewing.viewing_time %}{{ viewing.viewing_time|format_datetime }}{% endif %}
-                            {% if viewing.contact_name %} • {{ viewing.contact_name }}{% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-gray-50 flex gap-2">
-                        <a href="/view/{{ viewing.id }}" class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">View</a>
-                        <a href="/edit/{{ viewing.id }}" class="px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700">Edit</a>
-                        <button onclick="deleteViewing({{ viewing.id }})" class="px-3 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
-                    </div>
-                    
-                    <div class="p-4 overflow-y-auto" style="max-height: 70vh;">
-                        
-                        <div class="mb-3 pb-3 border-b">
-                            <div class="text-xs font-semibold text-gray-600">Price</div>
-                            {% if data.price %}
-                            <div class="text-sm text-gray-800">
-                                {% if data.price_currency == 'USD' %}${% elif data.price_currency == 'EUR' %}€{% else %}£{% endif %}{{ data.price }}
+        <div class="relative">
+            <div class="overflow-x-auto pb-4" id="scrollContainer">
+                <div class="flex gap-5 min-w-max">
+                    {% for viewing in viewings|reverse %}
+                    {% set data = viewing.checklist_data|from_json %}
+                    <div class="w-96 bg-white rounded-lg shadow-md flex flex-col flex-shrink-0 cursor-pointer hover:shadow-lg transition-shadow" onclick="window.location.href='/edit/{{ viewing.id }}'">
+                        <div class="p-4 bg-blue-600 text-white rounded-t-lg">
+                            <h3 class="font-semibold mb-1">{{ viewing.address }}</h3>
+                            <div class="text-xs opacity-90">
+                                {% if viewing.viewing_time %}{{ viewing.viewing_time|format_datetime }}{% endif %}
+                                {% if viewing.contact_name %} • {{ viewing.contact_name }}{% endif %}
                             </div>
-                            {% endif %}
+                        </div>
+                        {% if viewing.photo %}
+                        <img src="{{ viewing.photo }}" class="w-full h-48 object-cover" alt="Property">
+                        {% endif %}
+                        
+                        <div class="p-3 bg-gray-50 flex gap-2" onclick="event.stopPropagation()">
+                            <a href="/view/{{ viewing.id }}" class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">View</a>
+                            <a href="/edit/{{ viewing.id }}" class="px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700">Edit</a>
+                            <button onclick="deleteViewing({{ viewing.id }})" class="px-3 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
                         </div>
                         
-                        
-                        
-                        <div class="mb-3 pb-3 border-b">
-                            <div class="text-xs font-semibold text-gray-600">Deposit</div>
-                            {% if data.deposit %}
-                            <div class="text-sm text-gray-800">
-                                {% if data.deposit_currency == 'USD' %}${% elif data.deposit_currency == 'EUR' %}€{% else %}£{% endif %}{{ data.deposit }}
-                            </div>
-                            {% endif %}
-                        </div>
-                        
-                        
-                        
-                        <div class="mb-3 pb-3 border-b">
-                            <div class="text-xs font-semibold text-gray-600">Housemates</div>
-                            {% if data.total_housemates %}
-                            <div class="text-sm text-gray-800">{{ data.total_housemates }}</div>
-                            {% endif %}
-                        </div>
-                        
-                        
-                        <div class="mb-3">
-                            <div class="text-xs font-semibold text-gray-600 mb-2">Checklist</div>
-                            {% for prop in data.properties %}
-                            <div class="flex items-start gap-2 mb-2 p-2 rounded {% if prop.checked %}bg-green-50{% else %}bg-gray-50{% endif %}">
-                                <span class="{% if prop.checked %}text-green-600{% else %}text-gray-400{% endif %} font-bold">{% if prop.checked %}✓{% else %}✗{% endif %}</span>
-                                <div class="flex-1">
-                                    <div class="text-xs">{{ prop.label }}</div>
-                                    {% if prop.note %}
-                                    <div class="text-xs text-gray-600 italic mt-1">{{ prop.note }}</div>
-                                    {% endif %}
+                        <div class="p-4 overflow-y-auto" style="max-height: 70vh;">
+                            <div class="mb-3 pb-3 border-b">
+                                <div class="text-xs font-semibold text-gray-600">Price</div>
+                                <div class="text-sm text-gray-800">
+                                    {% if data.price %}{% if data.price_currency == 'USD' %}${% elif data.price_currency == 'EUR' %}€{% else %}£{% endif %}{{ data.price }}{% else %}-{% endif %}
                                 </div>
                             </div>
-                            {% endfor %}
-                        </div>
-                        <div class="mb-8">
-                            <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Notes</h2>
-                            {% if viewing.checklist_data.notes %}
-                            <div class="p-3 bg-gray-50 rounded">{{ viewing.checklist_data.notes }}</div>
-                            {% else %}<div class="p-3 bg-gray-50 rounded">No notes currently</div>
+                            
+                            <div class="mb-3 pb-3 border-b">
+                                <div class="text-xs font-semibold text-gray-600">Deposit</div>
+                                <div class="text-sm text-gray-800">
+                                    {% if data.deposit %}{% if data.deposit_currency == 'USD' %}${% elif data.deposit_currency == 'EUR' %}€{% else %}£{% endif %}{{ data.deposit }}{% else %}-{% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3 pb-3 border-b">
+                                <div class="text-xs font-semibold text-gray-600">Housemates</div>
+                                <div class="text-sm text-gray-800">{{ data.total_housemates if data.total_housemates else '-' }}</div>
+                            </div>
+                            
+                            {% if data.properties %}
+                            <div class="mb-3">
+                                <div class="text-xs font-semibold text-gray-600 mb-2">Checklist</div>
+                                {% for prop in data.properties %}
+                                <div class="flex items-start gap-2 mb-2 p-2 rounded {% if prop.checked %}bg-green-50{% else %}bg-gray-50{% endif %}">
+                                    <span class="{% if prop.checked %}text-green-600{% else %}text-gray-400{% endif %} font-bold">{% if prop.checked %}✓{% else %}✗{% endif %}</span>
+                                    <div class="flex-1">
+                                        <div class="text-xs">{{ prop.label }}</div>
+                                        {% if prop.note %}
+                                        <div class="text-xs text-gray-600 italic mt-1">{{ prop.note }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            {% if data.notes %}
+                            <div class="mb-3">
+                                <div class="text-xs font-semibold text-gray-600 mb-1">Notes</div>
+                                <div class="text-xs text-gray-700">{{ data.notes }}</div>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
+            <button onclick="scrollNext()" class="fixed right-5 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg text-gray-600 hover:text-blue-600 transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
         </div>
         {% else %}
         <div class="text-center py-16 text-gray-600">
@@ -114,6 +114,11 @@
                 .then(r => r.json())
                 .then(d => { if (d.success) location.reload(); });
             }
+        }
+        
+        function scrollNext() {
+            const container = document.getElementById('scrollContainer');
+            container.scrollBy({ left: 420, behavior: 'smooth' });
         }
     </script>
 </body>

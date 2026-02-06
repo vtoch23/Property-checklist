@@ -20,13 +20,36 @@
                     <label class="block mb-1 text-sm font-medium">Address *</label>
                     <input type="text" id="address" required class="w-full p-2 border rounded text-sm" value="{% if viewing %}{{ viewing.address }}{% endif %}">
                 </div>
+                
+                <div class="mb-3">
+                    <label class="block mb-1 text-sm font-medium">Photo</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded p-4 text-center" id="dropZone">
+                        <input type="file" id="photoFile" accept="image/*" class="hidden">
+                        <button type="button" onclick="document.getElementById('photoFile').click()" class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Choose Photo</button>
+                        <p class="text-xs text-gray-500 mt-2">or drag and drop</p>
+                    </div>
+                    <input type="hidden" id="photo" value="{% if viewing %}{{ viewing.photo }}{% endif %}">
+                    {% if viewing and viewing.photo %}
+                    <img src="{{ viewing.photo }}" class="mt-2 max-w-xs rounded" id="photoPreview" alt="Preview">
+                    {% else %}
+                    <img id="photoPreview" class="mt-2 max-w-xs rounded hidden" alt="Preview">
+                    {% endif %}
+                </div>
+                
                 <div class="mb-3">
                     <label class="block mb-1 text-sm font-medium">Viewing Time</label>
                     <input type="datetime-local" id="viewing_time" class="w-full p-2 border rounded text-sm" value="{% if viewing %}{{ viewing.viewing_time }}{% endif %}">
                 </div>
-                <div class="mb-3">
-                    <label class="block mb-1 text-sm font-medium">Contact Name</label>
-                    <input type="text" id="contact_name" class="w-full p-2 border rounded text-sm" value="{% if viewing %}{{ viewing.contact_name }}{% endif %}">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block mb-1 text-sm font-medium">Contact Name</label>
+                        <input type="text" id="contact_name" class="w-full p-2 border rounded text-sm" value="{% if viewing %}{{ viewing.contact_name }}{% endif %}">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-sm font-medium">Phone</label>
+                        <input type="tel" id="contact_phone" class="w-full p-2 border rounded text-sm" value="{% if checklist_data %}{{ checklist_data.contact_phone }}{% endif %}">
+                    </div>
                 </div>
             </div>
             
@@ -76,10 +99,7 @@
             
             <div class="mb-6">
                 <h2 class="text-base sm:text-lg font-semibold text-gray-700 mb-3 pb-2 border-b-2 border-blue-600">Notes</h2>
-                <textarea id="notes" class="w-full p-2 border rounded text-sm" rows="4">
-                    {% if checklist_data %}{{ checklist_data.notes }}
-                    {% endif %}
-                </textarea>
+                <textarea id="notes" class="w-full p-2 border rounded text-sm" rows="4">{% if checklist_data and checklist_data.notes %}{{ checklist_data.notes }}{% endif %}</textarea>
             </div>
             
             <div class="pt-4 border-t flex gap-2">
@@ -106,6 +126,42 @@
         
         let properties = [];
         let distances = [];
+        
+        const dropZone = document.getElementById('dropZone');
+        const photoFile = document.getElementById('photoFile');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoInput = document.getElementById('photo');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-blue-500');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-blue-500');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500');
+            if (e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+        
+        photoFile.addEventListener('change', (e) => {
+            if (e.target.files[0]) handleFile(e.target.files[0]);
+        });
+        
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                photoInput.value = e.target.result;
+                photoPreview.src = e.target.result;
+                photoPreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
         
         function initProperties() {
             {% if checklist_data and checklist_data.properties %}
@@ -229,7 +285,9 @@
                     address: document.getElementById('address').value,
                     viewing_time: document.getElementById('viewing_time').value,
                     contact_name: document.getElementById('contact_name').value,
+                    photo: document.getElementById('photo').value,
                     checklist: {
+                        contact_phone: document.getElementById('contact_phone').value,
                         price: document.getElementById('price').value,
                         price_currency: document.getElementById('price_currency').value,
                         deposit: document.getElementById('deposit').value,
