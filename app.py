@@ -137,7 +137,7 @@ def logout():
 @login_required
 def index():
     db = get_db()
-    viewings = db.execute('SELECT * FROM viewings WHERE user_id = ? ORDER BY created_at DESC', (session['user_id'],)).fetchall()
+    viewings = db.execute('SELECT * FROM viewings WHERE user_id = ? ORDER BY viewing_time DESC', (session['user_id'],)).fetchall()
     db.close()
     return render_template('index.html', viewings=viewings)
 
