@@ -85,9 +85,9 @@
                         </div>
                         <div class="mb-8">
                             <h2 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-blue-600">Notes</h2>
-                            {% if viewing.checklist_data.notes %}
-                            <div class="p-3 bg-gray-50 rounded">{{ viewing.checklist_data.notes }}</div>
-                            {% else %} No notes currently
+                            {% if checklist_data.notes %}
+                            <div class="p-3 bg-gray-50 rounded">{{ checklist_data.notes }}</div>
+                            {% else %}<div class="p-3 bg-gray-50 rounded">No notes currently</div>
                             {% endif %}
                         </div>
                     </div>
