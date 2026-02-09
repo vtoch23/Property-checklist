@@ -1,4 +1,4 @@
-const CACHE_NAME = 'property-viewer-v1';
+const CACHE_NAME = 'property-checklist-v1';
 const urlsToCache = [
   '/',
   '/new',
