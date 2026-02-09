@@ -1,12 +1,12 @@
-version: '3.8'
-
 services:
-  property-viewer:
+  property-checklist:
     build: .
     ports:
-      - "5000:5000"
+      - "5002:5000"
     volumes:
       - ./data:/data
+    env_file:
+      - .env
     environment:
       - FLASK_ENV=development
     restart: unless-stopped

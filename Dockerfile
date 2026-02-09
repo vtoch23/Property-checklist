@@ -2,8 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install Flask
-RUN pip install --no-cache-dir flask
+# Copy requirements first to leverage Docker layer caching
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
 COPY app.py .
@@ -17,3 +20,4 @@ EXPOSE 5000
 
 # Run the application
 CMD ["python", "app.py"]
+
