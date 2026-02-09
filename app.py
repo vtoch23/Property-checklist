@@ -8,7 +8,7 @@ import hashlib
 
 app = Flask(__name__)
 app.config['DATABASE'] = '/data/viewings.db'
-app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+app.secret_key = os.environ.get('SECRET_KEY')
 
 @app.route('/static/<path:path>')
 def send_static(path):
@@ -30,11 +30,11 @@ def format_datetime_filter(s):
 
 def login_required(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    def authenticate_user(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
-    return decorated_function
+    return authenticate_user
 
 def get_db():
     db = sqlite3.connect(app.config['DATABASE'])
