@@ -89,16 +89,18 @@
                     {% endfor %}
                 </div>
             </div>
-            <button onclick="scrollNext()" class="fixed right-5 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg text-gray-600 hover:text-blue-600 transition-all">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </button>
-            <button onclick="scrollPrev()" class="fixed left-5 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg text-gray-600 hover:text-blue-600 transition-all">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </button>
+            <div>
+                <button onclick="scrollNext()" class="fixed right-5 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg text-gray-600 hover:text-blue-600 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+                <button onclick="scrollPrev()" class="fixed left-5 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg text-gray-600 hover:text-blue-600 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
         {% else %}
         <div class="text-center py-16 text-gray-600">
@@ -128,7 +130,7 @@
 
         function scrollPrev() {
             const container = document.getElementById('scrollContainer');
-            container.scrollBy({ right: 420, behavior: 'smooth' });
+            container.scrollBy({ left: -420, behavior: 'smooth' });
         }
     </script>
 </body>
