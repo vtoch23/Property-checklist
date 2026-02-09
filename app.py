@@ -5,10 +5,14 @@ import sqlite3
 import json
 import os
 import hashlib
+import logging
+
 
 app = Flask(__name__)
 app.config['DATABASE'] = '/data/viewings.db'
 app.secret_key = os.environ.get('SECRET_KEY')
+logger = logging.getLogger(__name__)
+logger.info(os.environ.get('SECRET_KEY'))
 
 @app.route('/static/<path:path>')
 def send_static(path):
